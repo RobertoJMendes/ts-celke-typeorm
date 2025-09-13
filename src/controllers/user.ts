@@ -21,4 +21,14 @@ router.post("/user", async( req:Request, res:Response)=>{
         return
     }
 })
+router.get("/users",async(req:Request, res:Response)=>{
+    try {
+        const userRepository = AppDataSource.getRepository(User)
+        const users = await userRepository.find()
+        res.status(200).json(users)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({msg:"Listar, falhou!"})
+    }
+})
 export default router
