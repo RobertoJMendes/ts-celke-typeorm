@@ -1,7 +1,6 @@
 import express, { type Request, type Response } from 'express'
 import { AppDataSource } from "../data-source.js";
 import { User } from "../entity/user.js";
-
 const router = express.Router()
 router.post("/user", async( req:Request, res:Response)=>{
     try{
@@ -79,11 +78,26 @@ router.put("/users/:id", async( req:Request, res:Response)=>{
                 await userRepository.merge(user, data)
                 const updateUser = await userRepository.save(user)
                 res.status(200).json({updateUser:user, msg:"Usuário Atualizado!"})
-    }catch(error){
+            }catch(error){
+                console.log(error)
+                res.status(500).json({msg:"Falhou!"})
+                return
+            }
+        })
+router.delete("/users/:id",async(req:Request, res:Response)=>{
+    try {
+        let idUser = req.params
+        const userRepository = AppDataSource.getRepository(User)
+        const user = await userRepository.findOne({where:idUser})
+        if(!user){
+            res.status(404).json({msg:"Falhou!"})
+            return
+        }
+        const deleteUser = await userRepository.remove(user)
+        res.status(200).json({deleteUser, msg:"Ok!"})
+    } catch (error) {
         console.log(error)
-        res.status(500).json({msg:"Falhou!"})
-        return
+        res.status(500).json({msg:"Falhou, tente novamente!"})
     }
 })
-
 export default router

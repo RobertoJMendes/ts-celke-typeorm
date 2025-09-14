@@ -90,5 +90,22 @@ router.put("/users/:id", async (req, res) => {
         return;
     }
 });
+router.delete("/users/:id", async (req, res) => {
+    try {
+        let idUser = req.params;
+        const userRepository = AppDataSource.getRepository(User);
+        const user = await userRepository.findOne({ where: idUser });
+        if (!user) {
+            res.status(404).json({ msg: "Falhou!" });
+            return;
+        }
+        const deleteUser = await userRepository.remove(user);
+        res.status(200).json({ deleteUser, msg: "Ok!" });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Falhou, tente novamente!" });
+    }
+});
 export default router;
 //# sourceMappingURL=user.js.map
